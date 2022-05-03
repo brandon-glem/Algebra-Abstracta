@@ -1,46 +1,36 @@
 #include <iostream>
 #include <string>
-#include <vector>
 
 using namespace std;
 
 string alfabeto = "ABCDEFGHIJKLMNnOPQRSTUVWXYZ";
 
-vector<int> euclides_ext(int a, int b) {
-	int x, y, d;
-	if (b == 0) {
-		d = a;
-		x = 1;
-		y = 0;
-		vector<int> gcd = { d, x, y };
-		return gcd;
+int euclides_ext(int a, int b, int* x, int* y){
+	if (a == 0)
+	{
+		*x = 0, * y = 1;
+		return b;
 	}
-	int x1 = 0, x2 = 1, y1 = 1, y2 = 0;
-	while (b > 0) {
-		int q = a / b;
-		int r = a - (q * b);
-		x = x2 - (q * x1);
-		y = y2 - (q * y1);
-		a = b;
-		b = r;
-		x2 = x1;
-		x1 = x;
-		y2 = y1;
-		y1 = y;
-	}
-	d = a;
-	x = x2;
-	y = y2;
-	vector<int> gcd = { d,x,y };
+
+	int x1, y1;
+	int gcd = euclides_ext(b % a, a, &x1, &y1);
+
+	*x = y1 - (b / a) * x1;
+	*y = x1;
+
 	return gcd;
 }
 
-int inversa(int a, int b) {
-	vector<int> x;
-	x = euclides_ext(a, b);
-	int inverso;
-	inverso = ((x[1] % b) + b) % b;
-	return inverso;
+int inversa(int a, int m){
+	int x, y;
+	int g = euclides_ext(a, m, &x, &y);
+	if (g != 1)
+		return false;
+
+	else{
+		int res = (x % m + m) % m;
+		return res;
+	}
 }
 
 string cifrado(string mensaje, int clav1, int clav2) {
@@ -67,6 +57,19 @@ string descifrado(string mensaje, int clav1, int clav2) {
 	}
 	return descifrado;
 }
+void romperafin(string mensaje) {
+	int tam = alfabeto.size();
+	for (int a = 0; a < tam; a++) {
+		if (inversa(a, tam) != 0) {
+			for (int b = 0; b < tam; b++) {
+				cout << "clave a: " << a << "  clave b: " << b << "  mensaje: " << endl;
+				string des = descifrado(mensaje, a, b);
+				cout << des << endl;
+				cout << endl;
+			}
+		}
+	}
+}
 
 int main()
 {
@@ -79,4 +82,11 @@ int main()
 	string mensaje2 = "OKHFSNKFNWFCWJHSNCHQYWFSWF";
 	mensaje2 = descifrado(mensaje2, a, b);
 	cout << mensaje2 << endl;
+
+	string romper="SLBCMVRBSHZBTnSRQVVMSZBVHnBVRQVLALHZBTnSRQVWQAXLZWnAQFQV";
+	romperafin(romper);
+
+	cout << "LA RESPUESTA A ROMPER EL CODIGO ES a = 23 Y b = 17" << endl;
+	cout << descifrado(romper, 23, 17) << endl;
 }
+
